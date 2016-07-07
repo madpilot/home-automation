@@ -1,0 +1,43 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: -37.7461
+  longitude: 144.7686
+  # C for Celsius, F for Fahrenheit
+  temperature_unit: C
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Australia/Melbourne
+
+# View all events in a logbook
+logbook:
+
+# Enables the frontend
+frontend:
+
+# Checks for available updates
+updater:
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend
+conversation:
+
+# Enables support for tracking state changes over time.
+history:
+
+mqtt:
+  broker: mosquitto
+
+garage_door:
+  platform: mqtt
+  name: "Garage door"
+  state_topic: "home-assistant/garage"
+  command_topic: "home-assistant/garage/set"
+  optimistic: false
+  state_open: OPENED
+  state_closed: CLOSED
+  service_close: CLOSE
+  service_open: OPEN
+  qos: 0
