@@ -7,21 +7,17 @@ services:
     ports:
       - "1883:1883"
 
-  home_assistant:
-    image: homeassistant/home-assistant
-    ports:
-      - "8123:8123"
+  mosquitto-subscriber:
+    build:
+      context: .
+      dockerfile: mosquitto-client/Dockerfile.sub
+    depends_on: 
+      - mosquitto
+
+  mosquitto-publisher:
+    build:
+      context: .
+      dockerfile: mosquitto-client/Dockerfile.pub
     depends_on:
       - mosquitto
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "./home_assistant/config:/config"
-
-networks:
-  bridge:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      - subnet: 192.168.1.0/24
-        gateway: 192.168.1.1 
+      - mosquitto-subscriber
