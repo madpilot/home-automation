@@ -2,22 +2,22 @@ version: '2'
 services:
   mosquitto:
     build:
-      context: .
-      dockerfile: mosquitto/Dockerfile
+      context: mosquitto
+      dockerfile: Dockerfile
     ports:
-      - "1883:1883"
+      - "8883:8883"
 
   mosquitto-subscriber:
     build:
-      context: .
-      dockerfile: mosquitto-client/Dockerfile.sub
+      context: mosquitto-client
+      dockerfile: Dockerfile.sub
     depends_on: 
       - mosquitto
 
   mosquitto-publisher:
     build:
-      context: .
-      dockerfile: mosquitto-client/Dockerfile.pub
+      context: mosquitto-client
+      dockerfile: Dockerfile.pub
     depends_on:
       - mosquitto
       - mosquitto-subscriber
