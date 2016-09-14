@@ -1,2 +1,8 @@
 home_assistant/config/home-assistant.db
 home_assistant/config/home-assistant.log
+client/
+mosquitto/etc/ca_certificates/
+mosquitto/etc/certs/
+mosquitto/etc/passwd
+mosquitto-client/ca_certificates/
+mosquitto-client/certs/
