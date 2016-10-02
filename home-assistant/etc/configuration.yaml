@@ -1,0 +1,36 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: -37.79371095116535
+  longitude: 144.8650010974549
+  # C for Celsius, F for Fahrenheit
+  temperature_unit: C
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Australia/Melbourne
+
+logger:
+  default: error
+
+# Enables the frontend
+frontend:
+
+# View all events in a logbook
+logbook:
+
+# Discover some devices automatically
+discovery:
+
+# Prediction of weather
+sensor:
+  - platform: yweather
+    forecast: 0
+    monitored_conditions:
+      - weather
+      - temp_min
+      - temp_max
+      - weather_current
+      - temperature
+
+# Track the sun
+sun:

@@ -21,3 +21,23 @@ services:
     depends_on:
       - mosquitto
       - mosquitto-subscriber
+
+  home-assistant:
+    image: homeassistant/home-assistant
+    volumes:
+      - ./home-assistant/etc:/config
+    links:
+      - mosquitto:mqtt.local
+    depends_on:
+      - mosquitto
+    ports:
+      - "8123:8123"
+
+  node-red:
+    image: nodered/node-red-docker
+    volumes:
+      - ./node-red/etc:/data
+    depends_on:
+      - home-assistant
+    ports:
+      - "1880:1880"
