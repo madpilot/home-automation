@@ -2,438 +2,266 @@
 	@file: apps/photograb/photograb.js
 */
 
-var photograb_img = null; // Hmm, not used…
+var photograb_img = null;
 
+// Every app has an object
 function photograb() {
-	
-	// Start & Stop
-	this.appStart = appStart;
-	this.appQuit = appQuit;
-	
-	// Functions (We Register Functions?)
-	this.drawPaintArea = drawPaintArea;
-	this.clr2hex = clr2hex;
-	this.lastTouch = null;
-	this.setCanvasSize = setCanvasSize;
-	this.mpImg = null;
-	this.getPageOffset = getPageOffset;
-	
-	// Coords
-	this.mouseX = 0;
-	this.mouseY = 0;
-	
-	// Colors
-	this.theRed = 0;
-	this.theGreen = 0;
-	this.theBlue = 0;
-	
-	// RGB
-	this.r = 0;
-	this.g = 0;
-	this.b = 0;
-	
-	// Canvases
-	this.theCanvas = document.getElementById('canvas');
-	this.context = this.theCanvas.getContext('2d');
-	this.thePainter = document.getElementById('paintarea');
-	this.painterContext = this.thePainter.getContext('2d');
-	
-	// Listeners
-	this.theCanvas.addEventListener("mousemove", onSampMouseMove, false);
-	//this.theCanvas.addEventListener("click", onSampMouseClick, false);
-	//this.theCanvas.addEventListener("touchstart", onSampTouchStart, false);
-	//this.theCanvas.addEventListener("touchmove", onSampTouchMove, false);
-	this.thePainter.addEventListener("mousemove", onPaintMouseMove, false);
-	this.thePainter.addEventListener("click", onPaintMouseClick, false);
-	this.thePainter.addEventListener("touchstart", onPaintTouchStart, false);
-	this.thePainter.addEventListener("touchmove", onPaintTouchMove, false);
 
-	// Are we running on a Retina-class display?
-	// If so, track the pixel ratio, as we'll need it.
-	this.devicePixelRatio = 1;
-	if ('devicePixelRatio' in window) {
-		this.devicePixelRatio = window.devicePixelRatio;
-	}
-	console.log("The devicePixelRatio is: ", this.devicePixelRatio);
+	console.log('instancing photograb object');
 
 	function appStart() {
 		console.log("photograb.appStart");
 		$('head').append('<link rel="stylesheet" href="photograb.css" />'); // Muy importante!
 		sampApp();
-		setTimeout(function() {
-			setCanvasSize();
-			setPainterSize();
-		}, 500);
 	}
-	
-	$(window).resize(function() {
-		setCanvasSize();
-		setPainterSize();
-	});
 	
 	function appQuit() {
 		console.log("photograb.appQuit");
 	}
+		
+	this.lastTouch = null;
+	this.appStart = appStart;
+	this.appQuit = appQuit;
 	
-	function setCanvasSize() {
+	this.mouseX = 0;
+	this.mouseY = 0;
+	
+	this.theRed = 0;
+	this.theGreen = 0;
+	this.theBlue = 0;
 
-		console.log("photograb.setCanvasSize");
-		
-		var w = $('.canvas-container').width();
-		var h = $('.canvas-container').height();
-		
-		var wRetina = w * theApp.devicePixelRatio;
-		var hRetina = h * theApp.devicePixelRatio;
-		
-		// Bad: Canvas Exceeds Viewport
-		//$('#canvas').attr('width', wRetina);
-		//$('#canvas').attr('height', hRetina);
-		
-		// Bad: Canvas’ Image Not Full Size
-		$('#canvas').attr('width', w);
-		$('#canvas').attr('height', h);
-		
-		// PROBLEM
-		// Note, initially the canvas is 100% wide but just 290px high, which inputs to this problem
-		// Function handleFiles() image is set using maxWidth and maxHeight
-		// But this misbehaves depending on a portrait or landscape image, i.e.
-		// Whichever is the smallest, constrains the image size
-		// This rendering constraint is recursive, subsequent images get smaller and smaller :)
-		// Load a portrait followed by a landscape, rinse & repeat, to see this recursion in action
-		
-		// PROPOSAL
-		// Something like…
-		// Find the aspect ratio, or the larger of the image width or height
-		// Then render the image constrained by that dimension, and not the other
-		// Question is, how, considering megapix-image.js
-		
-		// SOLUTION ONE (Mediocre)
-		// Set maxHeight manually to 1024px 
-		// Note, this is based on iPad height in line with the 768px responsive max width
-		// This (poorly) assumes portrait orientation, but allows a max size load for most images
-		// Note, the below function works okay, because canvas has already been resized
-		// Note, it’s the handleFiles() function that has this dimension update
-		
-		// Resized So Redraw
-		if (theApp.mpImg != null) {
-			var resCanvas1 = document.getElementById('canvas');
-			theApp.mpImg.render(resCanvas1, { maxWidth: theApp.theCanvas.width, maxHeight: theApp.theCanvas.height });
-		}
-	}
+	this.theCanvas = document.getElementById('canvas');
+	this.context = this.theCanvas.getContext('2d');
+	console.log("Got context");
+	console.log(screen.width, screen.height);
+
+	// Fill the canvas area with black methinks
+	$("#canvas").css('background-color', '#000');
+
+	this.thePainter = document.getElementById('paintarea');
+	this.painterContext = this.thePainter.getContext('2d');
+	console.log("Got painter");
+
+	// Fill the painter area with dark gray methinks
+	this.drawPaintArea = drawPaintArea;
+	this.clr2hex = clr2hex;
+	$("#paintarea").css('background-color', '#3f3f3f');
 	
-	function setPainterSize() {
-		console.log("photograb.setPaintAreaSize");
-		//var w = $('.paintarea-container').width();
-		var w = $('.paintarea-container').width() / 2;
-		//var h = $('.paintarea-container').height();
-		var h = 50;
-		$('#paintarea').attr('width', w);
-		$('#paintarea').attr('height', h);
-	}
-	
+	this.theCanvas.addEventListener("mousemove", onSampMouseMove, false);
+	this.theCanvas.addEventListener("click", onSampMouseClick, false);
+	this.theCanvas.addEventListener("touchstart", onSampTouchStart, false);
+	this.theCanvas.addEventListener("touchmove", onSampTouchMove, false);
+
+	this.thePainter.addEventListener("mousemove", onPaintMouseMove, false);
+	this.thePainter.addEventListener("click", onPaintMouseClick, false);
+	this.thePainter.addEventListener("touchstart", onPaintTouchStart, false);
+	this.thePainter.addEventListener("touchmove", onPaintTouchMove, false);	
+
 	function drawPaintArea() {
-		
-		console.log("photograb.drawPaintArea");
-		
 		// Take the fastlights values and render them to the paint area
 		// This should reflect any user strokes to the paint area. We hope.
-		
-		// Get Painter Dimensions
+
+		// First of all draw the background of the area, hmm?
 		var w = theApp.thePainter.width;
 		var h = theApp.thePainter.height;
-		
-		// Width / 50 Globes
-		var i = w / 50.0;
-		
-		// Start 0
-		var startWidth = 0;
-		
-		// Loop Globes
-		for (var j = 0; j < 50; j++) {
 
-			// Get Current Light Colour
-			var clr = currentLight.fastbulbs[j];
-			// Convert To Hex Value
-			var clh = theApp.clr2hex(clr);
-			
-			// Paint One Globe
+		// Divide the width by 50 to do some layout stuffs
+		var i = w / 50.0;
+
+		var startWidth = 0;
+
+		for (var j=0; j < 50; j++) {
+
+			// Go through all the globes, in order
+			var clr = currentLight.fastbulbs[j];	// Get the color
+			var clh = theApp.clr2hex(clr);	// As a # hex value
+			//console.log(clh);
+
+			// Now create a tiny rectangle and fill it with the color of the globe
 			theApp.painterContext.beginPath();
 			theApp.painterContext.rect(startWidth, 0, i, h);
 			theApp.painterContext.fillStyle = clh;
 			theApp.painterContext.fill();
-			
-			// Increment Start
+
 			startWidth += i;
-			
+
 		}
 
-		// Convert RGB to Colour
-		redstr = theApp.r.toString(16);
+		// Now draw an outline box around the paint area, in the current colour selection
+		redstr = theApp.theRed.toString(16);
 		if (redstr.length < 2) {
 			redstr = "0" + redstr;
 		}
-		greenstr = theApp.g.toString(16);
+
+		greenstr = theApp.theGreen.toString(16);
 		if (greenstr.length < 2) {
 			greenstr = "0" + greenstr;
 		}
-		bluestr = theApp.b.toString(16);
+
+		bluestr = theApp.theBlue.toString(16);
 		if (bluestr.length < 2) {
 			bluestr = "0" + bluestr;
 		}
-		clh = "#" + redstr + greenstr + bluestr;
-		
-		// Outline Painter With Colour
+		clh = "#" + redstr + greenstr + bluestr;	
 		theApp.painterContext.beginPath();
 		theApp.painterContext.rect(0, 0, w, h);
-		theApp.painterContext.lineWidth = 1;
+		theApp.painterContext.lineWidth = 4;
 		theApp.painterContext.strokeStyle = clh;
 		theApp.painterContext.stroke();
-		
-		$("#pick").css('background-color', clh);
 
 	}
 
-	$('#canvas').bind('vmousedown', function(e) {
-		console.log('photograb.vmousedown');
-		e.preventDefault();
-	  	var pos = theApp.getPageOffset(this);
-	  	var x = e.pageX - pos.x;
-	  	var y = e.pageY - pos.y;
-
-		// New RGB
-		var rgb = theApp.context.getImageData(x, y, 1, 1).data;
-		theApp.r = rgb[0];
-		theApp.g = rgb[1];
-		theApp.b = rgb[2];
-		
-		// UI Output
-		var colour = "#" + rgbToHex(theApp.r, theApp.g, theApp.b);
-		$(".canvas").html("Canvas: " + x + " / " + y + " (#" + colour + ")");
-		
-		// Refresh
-		theApp.drawPaintArea();
-		theApp.lastTouch = new Date().getTime();
-	});
+	function clr2hex(clr) {
 	
-	$('#canvas').bind('touchmove', function(e) {
-		console.log("photograb.touchmove");
-		console.log(e);
-		e.preventDefault();
-		curr = new Date().getTime();
-		if ((curr - theApp.lastTouch) > 100) {
-			  console.log("Accepting touchmove");
-	 		  var touchpt = e.originalEvent.touches[0];
-			  var pos = theApp.getPageOffset(this);
-			  var x = touchpt.pageX - pos.x;
-			  var y = touchpt.pageY - pos.y;
-			  var c = document.getElementById('canvas').getContext('2d');
+		r = clr >> 16;
+		redstr = r.toString(16);
+		if (redstr.length < 2) {
+			redstr = "0" + redstr;
+		}
 
-			// New RGB
-			var rgb = c.getImageData(x, y, 1, 1).data;
-			theApp.r = rgb[0];
-			theApp.g = rgb[1];
-			theApp.b = rgb[2];
-			
-			// UI Output
-			var colour = rgbToHex(theApp.r, theApp.g, theApp.b);
-			$(".canvas").html("Canvas: " + x + " / " + y + " (#" + colour + ")");
-		
-			// Refresh
-			theApp.drawPaintArea();
-			theApp.lastTouch = new Date().getTime();
-		} /*else {
-			console.log("Declining touchmove");
-		}*/
-	});
+		g = (clr >> 8) & 0xff;
+		greenstr = g.toString(16);
+		if (greenstr.length < 2) {
+			greenstr = "0" + greenstr;
+		}
 
+		b = clr & 0xff;
+		bluestr = b.toString(16);
+		if (bluestr.length < 2) {
+			bluestr = "0" + bluestr;
+		}	
+		return "#" + redstr + greenstr + bluestr;
+	}
 
 	function onPaintMouseMove(e) {
-		console.log('photograb.onPaintMouseMove');
+		console.log('onPaintMouseMove');
 	}
 
 	function onPaintMouseClick(e) {
-		
-		console.log('photograb.onPaintMouseClick');
-		
-		// Paint Click Coordinates
-		var pos = getPageOffset(this);
-		var x = e.pageX - pos.x;
-	  var y = e.pageY - pos.y;
-	  //console.log("X: " + x + ", Y: " + y);
+		console.log('onPaintMouseClick');
+		console.log(theApp.theRed, theApp.theGreen, theApp.theBlue);
 
-		// Get Painter Dimensions
+		// Figure out where we are in order to know what globe to light up.
+		theApp.mouseX = e.clientX - theApp.thePainter.offsetLeft;
+		theApp.mouseY = e.clientY - theApp.thePainter.offsetTop;
+
+		// First of all draw the background of the area, hmm?
 		var w = theApp.thePainter.width;
 		var h = theApp.thePainter.height;
 
-		// Width / 50 Globes
+		// Divide the width by 50 to do some layout stuffs
 		var i = w / 50.0;
-		var theGlobe = Math.floor(x / i)
 
-		// Set Globe Colour
+		// Now the mouseX should be some integer multiple of i, we'd hope...
+		var theGlobe = Math.floor(theApp.mouseX / i)
+		//console.log(theApp.mouseX, i, Math.floor(theApp.mouseX / i));
+
+		// Put the current colour into the globe, then referesherate everything.
 		if (theGlobe >= 0 && theGlobe < 50) {
-			currentLight.fastset(theApp.r, theApp.g, theApp.b, theGlobe);
+			currentLight.fastset(theApp.theRed, theApp.theGreen, theApp.theBlue, theGlobe);
 		}
-		
-		// UI Output
-		$(".paintarea").html("PaintArea: " + x + " / " + y + " (Globe " + theGlobe + "/50)");
-		
-		// UI & Holiday
+
 		theApp.drawPaintArea();
 		currentLight.fastlights();
 
 	}
 
 	function onPaintTouchStart(e) {
-		
-		console.log('photograb.onPaintTouchStart');
-		
-		var touch = e.touches[0];
-		
-		// Paint Touch Coordinates
-		var pos = getPageOffset(this);
-		var x = touch.pageX - pos.x;
-	  var y = touch.pageY - pos.y;
-	  
-		// Get Painter Dimensions
-		var w = theApp.thePainter.width;
 
-		// Width / 50 Globes
+		var touch = e.touches[0];
+		console.log("onPaintTouchStart", touch.clientX, touch.clientY );
+		theApp.mouseX = touch.clientX - theApp.thePainter.offsetLeft;
+		theApp.mouseY = touch.clientY - theApp.thePainter.offsetTop;
+
+		console.log("paint touch: " + theApp.mouseX + "," + theApp.mouseY);
+
+		// First of all draw the background of the area, hmm?
+		var w = theApp.thePainter.width;
+		var h = theApp.thePainter.height;
+
+		// Divide the width by 50 to do some layout stuffs
 		var i = w / 50.0;
-		var theGlobe = Math.floor(x / i)
+
+		// Now the mouseX should be some integer multiple of i, we'd hope...
+		var theGlobe = Math.floor(theApp.mouseX / i)
+		//console.log(theApp.mouseX, i, Math.floor(theApp.mouseX / i));
 
 		var currTouch = new Date().getTime();
 
-		// Set Globe Colour
+		// Put the current colour into the globe, then referesherate everything.
 		if (theGlobe >= 0 && theGlobe < 50) {
 			if ((currTouch - theApp.lastTouch) > 50 ) {	// Max 20hz refresh rate
-				currentLight.fastset(theApp.r, theApp.g, theApp.b, theGlobe);
+				currentLight.fastset(theApp.theRed, theApp.theGreen, theApp.theBlue, theGlobe);
 				theApp.lastTouch = currTouch;
 			}
 		}
-		
-		// Refresh
+
 		theApp.drawPaintArea();
 		currentLight.fastlights();
 
 	}
 
 	function onPaintTouchMove(e) {
-		console.log('photograb.onPaintTouchMove');
+		console.log('onPaintTouchMove');
 		event.preventDefault();
 		onPaintTouchStart(e);
+		/*curr = new Date().getTime();
+		if ((curr - theApp.lastTouch) > 100) {
+			onSampTouchStart(e);
+		} else {
+			console.log("ignoring");
+		}*/
 	}
 
 	function onSampMouseMove(e) {
-		//console.log('photograb.onSampMouseMove');
+		theApp.mouseX = e.clientX - theApp.theCanvas.offsetLeft;
+		theApp.mouseY = e.clientY - theApp.theCanvas.offsetTop;
+
 	}
 	
-/*	function onSampMouseClick(e) {
-		
-		console.log('photograb.onSampMouseClick');
-		
-		// Old Coordinates
-		//theApp.mouseX = e.clientX - theApp.theCanvas.offsetLeft;
-		//theApp.mouseY = e.clientY - theApp.theCanvas.offsetTop;
-		//console.log("click: " + theApp.mouseX + ", " + theApp.mouseY);
-		
-		// Old RGB
-		//imageData = theApp.context.getImageData(theApp.mouseX, theApp.mouseY, 1, 1);
-		//var red = theApp.theRed = imageData.data[0];
-		//var green = theApp.theGreen = imageData.data[1];
-		//var blue = theApp.theBlue = imageData.data[2];
-		//console.log("color (" + red.toString(16) + ", " + green.toString(16) + ", " + blue.toString(16) + ")")
-		
-		// New Coordinates
-		var pos = getPageOffset(this);
-		var x = e.pageX - pos.x;
-	  var y = e.pageY - pos.y;
-	  //console.log("X: " + x + ", Y: " + y);
-		
-		// New RGB
-		var rgb = theApp.context.getImageData(x, y, 1, 1).data;
-		theApp.r = rgb[0];
-		theApp.g = rgb[1];
-		theApp.b = rgb[2];
-		
-		// UI Output
-		var colour = rgbToHex(theApp.r, theApp.g, theApp.b);
-		$(".canvas").html("Canvas: " + x + " / " + y + " (#" + colour + ")");
-		
-		// Refresh
+	function onSampMouseClick(e) {
+		theApp.mouseX = e.clientX - theApp.theCanvas.offsetLeft;
+		theApp.mouseY = e.clientY - theApp.theCanvas.offsetTop;
+
+		console.log("click: " + theApp.mouseX + "," + theApp.mouseY);   
+		imageData = theApp.context.getImageData(theApp.mouseX,theApp.mouseY,1,1);
+		var red = theApp.theRed = imageData.data[0];
+		var green = theApp.theGreen = imageData.data[1];
+		var blue = theApp.theBlue = imageData.data[2];
+		console.log("color (" + red.toString(16) + ", " + green.toString(16) + ", " + blue.toString(16) + ")")
+		//currentLight.setlamp(red, green, blue);
 		theApp.drawPaintArea();
-		
 	}
 
 	function onSampTouchStart(e) {
-		
-		console.log('photograb.onSampTouchStart');
-		
 		event.preventDefault();
-		
-		//var touch = e.originalEvent.touches[0];
-		var touch = e.originalEvent.touches[0];
-		//var touch = e.touches[0];
-		
-		// Old Coordinates
-		//theApp.mouseX = touch.clientX - theApp.theCanvas.offsetLeft;
-		//theApp.mouseY = touch.clientY - theApp.theCanvas.offsetTop;
-		//console.log("touch: " + theApp.mouseX + "," + theApp.mouseY);
-		
-		// New Coordinates
-		var pos = getPageOffset(this);
-		var x = touch.pageX - pos.x;
-	  var y = touch.pageY - pos.y;
-	  //console.log("X: " + x + ", Y: " + y);
-		
-		// Old RGB
-		//imageData = theApp.context.getImageData(theApp.mouseX,theApp.mouseY,1,1);
-		//var red = theApp.theRed = imageData.data[0];
-		//var green = theApp.theGreen = imageData.data[1];
-		//var blue = theApp.theBlue = imageData.data[2];
-		//console.log("color (" + red.toString(16) + ", " + green.toString(16) + ", " + blue.toString(16) + ")")
-		
-		// New RGB
-		var rgb = theApp.context.getImageData(x, y, 1, 1).data;
-		theApp.r = rgb[0];
-		theApp.g = rgb[1];
-		theApp.b = rgb[2];
-		
-		// UI Output
-		var colour = rgbToHex(theApp.r, theApp.g, theApp.b);
-		$(".canvas").html("Canvas: " + x + " / " + y + " (#" + colour + ")");
-		
-		// Refresh
+		var touch = e.touches[0];
+		console.log("onTouchStart", touch.clientX, touch.clientY );
+		theApp.mouseX = touch.clientX - theApp.theCanvas.offsetLeft;
+		theApp.mouseY = touch.clientY - theApp.theCanvas.offsetTop;
+		console.log("touch: " + theApp.mouseX + "," + theApp.mouseY);
+		imageData = theApp.context.getImageData(theApp.mouseX,theApp.mouseY,1,1);
+		var red = theApp.theRed = imageData.data[0];
+		var green = theApp.theGreen = imageData.data[1];
+		var blue = theApp.theBlue = imageData.data[2];
+		console.log("color (" + red.toString(16) + ", " + green.toString(16) + ", " + blue.toString(16) + ")")
+		//currentLight.setlamp(red, green, blue);
 		theApp.drawPaintArea();
 		theApp.lastTouch = new Date().getTime();
-		
-	}*/
+	}
 	
 	function onSampTouchMove(e) {
-		
-		console.log('photograb.onSampTouchMove');
-		
+		console.log("onTouchMove");
 		event.preventDefault();
-		
 		curr = new Date().getTime();
 		if ((curr - theApp.lastTouch) > 50) {
 			onSampTouchStart(e);
 		} else {
-			//console.log("ignoring");
+			console.log("ignoring");
 		}
-		
-	}
-	
-	
-	/* Sub Functions … */
-	
-	function rgbToHex(r, g, b) {
-		if (r > 255 || g > 255 || b > 255)
-	    throw "Invalid";
-		return ((r << 16) | (g << 8) | b).toString(16);
 	}
 	
 	function sampSupport () {
-		console.log('photograb.sampSupport');
 		if (window.File && window.FileReader && window.FileList && window.Blob) {
 			return true;
 		} else {
@@ -441,8 +269,8 @@ function photograb() {
 		}
 	}
 	
-	function sampApp() {
-		console.log('photograb.sampApp');
+	function sampApp(){
+	
 		if (sampSupport() == false) {
 			alert("HTML5 file upload not fully supported!");
 			return;
@@ -451,49 +279,84 @@ function photograb() {
 		}
 	}
 	
-	function clr2hex(clr) {
-		console.log("photograb.clr2hex");
-		r = clr >> 16;
-		redstr = r.toString(16);
-		if (redstr.length < 2) {
-			redstr = "0" + redstr;
-		}
-		g = (clr >> 8) & 0xff;
-		greenstr = g.toString(16);
-		if (greenstr.length < 2) {
-			greenstr = "0" + greenstr;
-		}
-		b = clr & 0xff;
-		bluestr = b.toString(16);
-		if (bluestr.length < 2) {
-			bluestr = "0" + bluestr;
-		}	
-		return "#" + redstr + greenstr + bluestr;
-	}
-	
-	function getPageOffset(obj) {
-		console.log("photograb.getPageOffset");
-	  var cursorX = 0, cursorY = 0;
-	  if (obj.offsetParent) {
-	    do {
-	      cursorX += obj.offsetLeft;
-	      cursorY += obj.offsetTop;
-	    } while (obj = obj.offsetParent);
-	    return { x: cursorX, y: cursorY };
-	  }
-	  return undefined;
-	}
-	
+
 }
+
+// function photograb_imageLoaded() {
+
+// 	console.log("imageLoaded");
+
+// 	// Should we maybe resize based on the image size?
+// 	//console.log(photograb_img);
+// 	console.log(photograb_img.width, photograb_img.height);
+
+// 	// OK let's try a little resizery here
+// 	// First, figure out which dimension ain't gonna scale.
+// 	/*var scale_width = theApp.theCanvas.width / photograb_img.width;
+// 	var scale_height = theApp.theCanvas.height / photograb_img.height;
+
+// 	// The smaller of the ratios is the one that should command our attention
+// 	if (scale_width <= scale_height) {*/
+
+// 		//var scale = theApp.theCanvas.width / photograb_img.width;
+// 		//photograb_img.setAttribute('width', Math.floor(photograb_img.width * scale));
+// 		//photograb_img.height = Math.floor(photograb_img.height * scale);
+
+// 	} else {
+
+// 		var scale = theApp.theCanvas.height / photograb_img.height;
+// 		photograb_img.setAttribute('width', Math.floor(photograb_img.width * scale));
+// 		photograb_img.height = Math.floor(photograb_img.height * scale);
+
+// 	}
+
+// 	console.log(photograb_img.width, photograb_img.height);
+
+// 	// Need to do something hear to clear the canvas to transparent...
+// 	theApp.context.fillStyle = "rgba(0, 0, 0, 1)";
+// 	theApp.context.fillRect(0, 0, theApp.theCanvas.width, theApp.theCanvas.width);
+// 	theApp.context.fillStyle = "rgba(255, 255, 255, 0)";
+// 	theApp.context.fillRect(0, 0, theApp.theCanvas.width, theApp.theCanvas.width);
+// 	//theApp.context.drawImage(photograb_img, 0, 0, 290, 290);
+// 	theApp.context.drawImage(photograb_img, 0, 0, photograb_img.width, photograb_img.height,
+// 		0, 0, theApp.theCanvas.width, theApp.theCanvas.height);
+
+
+// 	theApp.drawPaintArea();
+	
+// }
+	
+/*function handlefiles(tf){
+	console.log("handlefiles got ", tf.length, " files");	
+
+	photograb_img = new Image();
+	photograb_img.name = "a_photo";
+	photograb_img.classList.add("obj");
+	photograb_img.file = tf[0];
+	$(photograb_img).load(photograb_imageLoaded);
+	//console.log("grabbing ", photograb_img.file);
+	 
+	var reader = new FileReader();
+	reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(photograb_img);
+	reader.readAsDataURL(tf[0]);
+	while (reader.readyState == false) {
+		var x = 1;
+	}
+
+	//console.log(photograb_img);
+	return;
+}*/
 
 function handlefiles(tf){
 	console.log("handlefiles got ", tf.length, " files");	
-	theApp.setCanvasSize();
+
 	var file = tf[0];
-	theApp.mpImg = new MegaPixImage(file);
+	var mpImg = new MegaPixImage(file);
+
 	var resCanvas1 = document.getElementById('canvas');
-	//theApp.mpImg.render(resCanvas1, { maxWidth: theApp.theCanvas.width, maxHeight: theApp.theCanvas.height });
-	theApp.mpImg.render(resCanvas1, { maxWidth: theApp.theCanvas.width, maxHeight: 1024 });
+	console.log("dimensions: ", theApp.theCanvas.width, theApp.theCanvas.height)
+	mpImg.render(resCanvas1, { maxWidth: theApp.theCanvas.width, maxHeight: theApp.theCanvas.height });
 	theApp.drawPaintArea();
+
 	return;
 }

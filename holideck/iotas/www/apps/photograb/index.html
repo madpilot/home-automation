@@ -52,27 +52,22 @@
 		
 		<section data-role="content">
 			
-			<form>
-				<input class="photograb-button" id="pic" type="file" accept="image/*" capture="camera" onchange="handlefiles(this.files)" />
-			</form>
+			<div>
+				<form>
+					<input class="photograb-button" id="pic" type="file" accept="image/*" capture="camera" onchange="handlefiles(this.files)" />
+				</form>
+			</div>
 			
-			<div class="canvas-container">
+			<div class="photo">
 				<canvas id="canvas" width="290" height="290">
 					Your browser does not support the HTML5 Canvas. 
 				</canvas>
 			</div>
 			
-			<div class="paintarea-container">
-				<canvas id="paintarea" width="290" height="50">
+			<div class="painter">
+				<canvas  id="paintarea" width="290" height="50">
 					Your browser does not support the HTML5 Canvas. 
 				</canvas>
-				<div id="pick">
-				</div>
-			</div>
-			
-			<div class="debug">
-				<p class="canvas">Canvas: </p>
-				<p class="paintarea">PaintArea: </p>
 			</div>
 			
 		</section>

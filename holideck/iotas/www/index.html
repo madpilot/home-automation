@@ -45,14 +45,18 @@
 		console.log(addr);
 
 		// Setup IoTAS
-		console.log('instancing iotas')
+		console.log('creating iotas object')
 		var iotasrv = new iotas(document.URL);
 		iotasrv.get_status();
 
 		// Specifically for the simulator we grab the URL out of the browser
 		// This is what we use to communicate with the simulator.
 		// A bit of a hack, but it seems to work.
-		var loc = window.location.hostname + ":" + window.location.port;
+		if (window.location.port.length == 0) {
+			var loc = window.location.hostname;
+		} else {
+			var loc = window.location.hostname + ":" + window.location.port;
+		}
 		console.log(loc);
 
 		var defaultholidays = [ ['sim', loc ] ];
