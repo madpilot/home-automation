@@ -1,9 +1,13 @@
 FROM ubuntu:latest
 
+ENV TINI_VERSION v0.10.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+
 RUN apt update -qq && apt install -y python-software-properties
 RUN apt update -qq && apt install -y mosquitto-clients
 
 RUN mkdir /ca
 
-ENTRYPOINT [ "mosquitto_pub", "-h", "mosquitto", "-p", "8883", "--cafile", "/ca/ca.crt.pem", "--cert", "/ca/mqtt-client.local.crt.pem", "--key", "/ca/mqtt-client.local.key.pem" ]
+ENTRYPOINT [ "/tini", "--", "mosquitto_pub", "-h", "mqtt.local", "-p", "8883", "--cafile", "/ca/ca.crt.pem", "--cert", "/ca/mqtt-client.local.crt.pem", "--key", "/ca/mqtt-client.local.key.pem" ]
 CMD [ "-t", "test", "-m", "Hello World" ]
