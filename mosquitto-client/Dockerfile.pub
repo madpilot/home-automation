@@ -3,11 +3,7 @@ FROM ubuntu:latest
 RUN apt update -qq && apt install -y python-software-properties
 RUN apt update -qq && apt install -y mosquitto-clients
 
-RUN mkdir /ca_certificates && mkdir /certs
+RUN mkdir /ca
 
-COPY ca_certificates/ca.crt /ca_certificates/ca.crt
-COPY certs/client.crt.pem /certs/client.crt.pem
-COPY certs/client.key.pem /certs/client.key.pem
-
-ENTRYPOINT [ "mosquitto_pub", "-h", "mosquitto", "-p", "8883", "--cafile", "/ca_certificates/ca.crt", "--insecure", "--cert", "/certs/client.crt.pem", "--key", "/certs/client.key.pem" ]
+ENTRYPOINT [ "mosquitto_pub", "-h", "mosquitto", "-p", "8883", "--cafile", "/ca/ca.crt.pem", "--cert", "/ca/mqtt-client.local.crt.pem", "--key", "/ca/mqtt-client.local.key.pem" ]
 CMD [ "-t", "test", "-m", "Hello World" ]

@@ -1,16 +1,32 @@
 version: '2'
 services:
+  certificates:
+    build:
+      context: certificates
+      dockerfile: Dockerfile
+    volumes:
+      - ./ca:/ca_mount
+    command: [ '/bin/sh', '-c', 'cp /ca/* /ca_mount' ]
+
   mosquitto:
     build:
       context: mosquitto
       dockerfile: Dockerfile
+    volumes:
+      - ./ca:/ca
     ports:
       - "8883:8883"
+    depends_on:
+      - certificates
 
   mosquitto-subscriber:
     build:
       context: mosquitto-client
       dockerfile: Dockerfile.sub
+    volumes:
+      - ./ca:/ca
+    links:
+      - mosquitto:mqtt.local
     depends_on: 
       - mosquitto
 
@@ -18,7 +34,12 @@ services:
     build:
       context: mosquitto-client
       dockerfile: Dockerfile.pub
+    volumes:
+      - ./ca:/ca
+    links:
+      - mosquitto:mqtt.local
     depends_on:
+      - certificates
       - mosquitto
       - mosquitto-subscriber
 
@@ -26,9 +47,11 @@ services:
     image: homeassistant/home-assistant
     volumes:
       - ./home-assistant/etc:/config
+      - ./ca:/ca
     links:
       - mosquitto:mqtt.local
     depends_on:
+      - certificates
       - mosquitto
     ports:
       - "8123:8123"
@@ -37,7 +60,11 @@ services:
     image: nodered/node-red-docker
     volumes:
       - ./node-red/etc:/data
+    links:
+      - mosquitto:mqtt.local
+      - home-assistant:hass.local
     depends_on:
+      - certificates
       - home-assistant
     ports:
       - "1880:1880"

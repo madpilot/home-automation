@@ -21,6 +21,15 @@ logbook:
 # Discover some devices automatically
 discovery:
 
+mqtt:
+  broker: mqtt.local
+  port: 8883
+  client_id: hass
+  certificate: /ca/ca.crt.pem
+  client_cert: /ca/hass.local.crt.pem
+  client_key: /ca/hass.local.key.pem
+  tls_insecure: false
+
 # Prediction of weather
 sensor:
   - platform: yweather

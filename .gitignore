@@ -6,3 +6,5 @@
 /home-assistant/etc/home-assistant.log
 /home-assistant/etc/home-assistant_v2.db
 /home-assistant/etc/secrets.yaml
+/ca/*
+!/ca/.keep
