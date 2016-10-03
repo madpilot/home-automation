@@ -43,3 +43,95 @@ sensor:
 
 # Track the sun
 sun:
+
+# Enables support for tracking state changes over time.
+history:
+
+# Checks for available updates
+updater:
+
+# Allows you to issue voice commands from the frontend
+conversation:
+
+light:
+  - name: "LiFX"
+    platform: lifx
+    broadcast: 192.168.1.255
+
+  - name: "Moorse Holiday"
+    platform: moores_holiday
+
+switch:
+  - name: "Workshop Computer"
+    platform: wake_on_lan
+    mac_address: "00:25:22:ab:58:d2"
+    host: "workshop.local"
+
+  - name: "Games Computer"
+    platform: wake_on_lan
+    mac_address: "bc:5f:f4:96:4d:aa"
+    host: "games.local"
+
+group:
+  lounge_room:
+    name: "Lounge Room"
+    entities:
+      - light.lounge_room_lamp
+  bedroom:
+    name: "Bedroom"
+    entities:
+      - light.bedroom_light
+      - light.bedroom_lamp
+  holiday:
+    name: "Moore's Holiday"
+    entities:
+      - light.holiday_bulldogs_app
+      - light.holiday_christmas_app
+  garage:
+    name: "Garage"
+    entities:
+      - switch.games_computer
+      - switch.workshop_computer
+
+scene:
+  - name: "Good Night"
+    entities:
+      light.lounge_room_lamp:
+        state: off
+        transition: 2
+      light.bedroom_lamp:
+        state: off
+        transition: 2
+      light.bedroom_light:
+        state: off
+        transition: 2
+      light.holiday_christmas_app:
+        state: off
+      light.holidate_bulldogs_app:
+        state: off
+
+  - name: "Good Morning"
+    entities:
+      light.lounge_room_lamp:
+        state: off
+        transition: 2
+      light.bedroom_lamp:
+        state: on
+        transition: 300
+      light.bedroom_light:
+        state: off
+        transition: 2
+
+  - name: "Living Room"
+    entities:
+      light.lounge_room_lamp:
+        state: on
+        transition: 2
+        brightness: 184
+
+  - name: "Watch a Movie"
+    entities:
+      light.lounge_room_lamp:
+        state: on
+        transition: 2
+        brightness: 70

@@ -43,6 +43,13 @@ services:
       - mosquitto
       - mosquitto-subscriber
 
+  holideck:
+    build:
+      context: holideck
+      dockerfile: Dockerfile
+    volumes:
+      - ./holideck:/holideck
+
   home-assistant:
     image: homeassistant/home-assistant
     volumes:
