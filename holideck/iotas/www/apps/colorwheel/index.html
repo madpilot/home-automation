@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Holiday &raquo; Color Wheel</title>
+	
+</head>
+
+<body>
+	
+	<div data-role="page" id="colorwheel">
+	
+		<script src="colorwheel.js"></script>
+	
+		<script>
+			
+			// Start the App
+			function start_app() {
+				theApp = new colorwheel(); // Instance an App
+				theApp.appStart(); // Start the App up
+			}
+			
+			// Stop the App
+			function stop_app() {
+				theApp.appQuit(); // Quit the App
+				$( document ).undelegate("#colorwheel", "pageinit", start_app);
+				$( document ).undelegate("#colorwheel", "pagebeforehide", stop_app );
+			}
+	
+			console.log("Location #colorwheel")
+	
+			$( document ).delegate("#colorwheel", "pageinit", start_app);
+			$( document ).delegate("#colorwheel", "pagebeforehide", stop_app);
+
+			// Must add this little bit of stuff to every app so it correctly clears itself from the cache
+			$( '#colorwheel' ).on("pagehide", function(event, ui) {
+				console.log('colorwheel.remove');
+				$('#colorwheel').remove();			// Dump the page from memory
+			});
+
+		</script>
+
+		
+		<header data-role="header" data-position="fixed">
+			
+			<a href="#apps" class="ui-icon-nodisc ui-icon-alt" data-role="button" data-icon="grid" data-iconpos="notext" data-theme="c" data-inline="true" data-rel="back">Apps</a>
+			
+			<h1>Colour Wheel</h1>
+			
+		</header>
+		
+		<section data-role="content">
+			
+			<div class="selector">
+				<canvas id="canvas" width="320" height="320">
+					Your browser does not support the HTML5 Canvas. 
+				</canvas>
+			</div>
+			
+			<div class="circle pick"></div>
+			<div class="circle complement"></div>
+			<div class="circle hover"></div>
+			
+			<div class="radar">
+				<p>Coordinates &amp; Hex Code</p>
+			</div>
+			
+		</section>
+		
+	</div>
+	<!-- /colorwheel -->
+		
+</body>
+</html>

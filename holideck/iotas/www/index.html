@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Holiday Apps</title>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	
+	<link rel="apple-touch-icon" href="./assets/apple-touch-icon-57x57.png" />
+	<link rel="apple-touch-icon" sizes="72x72" href="./assets/apple-touch-icon-72x72.png" />
+	<link rel="apple-touch-icon" sizes="114x114" href="./assets/apple-touch-icon-114x114.png" />
+	<link rel="apple-touch-icon" sizes="144x144" href="./assets/apple-touch-icon-144x144.png" />
+	<link rel="apple-touch-startup-image" href="./assets/apple-touch-splash.png">
+	
+	<link rel="stylesheet" href="./css/jquery.mobile-1.4.0-beta.1.css" />
+	<link rel="stylesheet" href="./css/holiday.css" />
+
+	<script src="./js/jquery-1.10.2.js"></script>
+	<script src="./js/jquery.mobile-1.4.0-beta.1.min.js"></script>
+	<script src="./js/iotas.js"></script>
+	<script src="./js/holiday.js"></script>
+
+	<script>
+
+		// Setup some JQuery Mobile loading dialog stuffs...
+		
+		  $.mobile.loader.prototype.options.text = "Loading...";
+		  $.mobile.loader.prototype.options.textVisible = true;
+		  $.mobile.loader.prototype.options.theme = "a";
+		  $.mobile.loader.prototype.options.html = "";
+		  console.log("setting up loader options");
+
+	</script>
+
+
+	<script>
+		
+		// This should prevent failures if the console isn't available
+		// From http://stackoverflow.com/questions/690251/what-happened-to-console-log-in-ie8
+		var console=console||{"log":function(){}};
+
+		// Put the main script stuff in it
+		var addr = document.URL.slice(7,-1);
+		console.log(addr);
+
+		// Setup IoTAS
+		console.log('instancing iotas')
+		var iotasrv = new iotas(document.URL);
+		iotasrv.get_status();
+
+		// Specifically for the simulator we grab the URL out of the browser
+		// This is what we use to communicate with the simulator.
+		// A bit of a hack, but it seems to work.
+		var loc = window.location.hostname + ":" + window.location.port;
+		console.log(loc);
+
+		var defaultholidays = [ ['sim', loc ] ];
+		var holidays = [null, null, null];		// The array of lights
+		var currentLight = null;
+		var theApp = null;
+
+		// Create and setup the current lights
+		for (var j=0; j < defaultholidays.length; j++) {
+			holidays[j] = new Holiday(defaultholidays[j][1]);
+		}
+		currentLight = holidays[0];		// And we've created a holiday
+		console.log(currentLight);
+
+	</script>
+	
+</head>
+
+<body id="holiday">
+	
+	<div data-role="page" id="apps">
+		
+		<header data-role="header" data-position="fixed">
+			
+			<h1>Holiday Apps</h1>
+			
+		</header>
+	
+		<section data-role="content">
+			
+			<div class="ui-grid-rwd">
+
+				<div class="ui-block-rwd">
+					<a href="apps/colorwheel/" data-transition="slide">
+						<img src="apps/colorwheel/app-icon-colorwheel.png" alt=""/>
+					</a>
+				</div>
+				<div class="ui-block-rwd">
+					<a href="apps/photograb/" data-transition="slide">
+						<img src="apps/photograb/app-icon-photograb.png" alt=""/>
+					</a>
+				</div>
+				<div class="ui-block-rwd">
+					<a href="apps/api-demo/" data-transition="slide">
+						<img src="apps/api-demo/app-icon-api-demo.png" alt=""/>
+					</a>
+				</div>
+				<div class="ui-block-rwd">
+					<a href="apps/lightcompass/" data-transition="slide">
+						<img src="apps/lightcompass/app-icon-lightcompass.png" alt=""/>
+					</a>
+				</div>
+				<div class="ui-block-rwd">
+					<a href="apps/afl/" data-transition="slide">
+						<img src="apps/afl/app-icon-afl.png" alt=""/>
+					</a>
+				</div>
+				<div class="ui-block-rwd">
+					<a href="apps/nrl/" data-transition="slide">
+						<img src="apps/nrl/app-icon-nrl.png" alt=""/>
+					</a>
+				</div>
+				<div class="ui-block-rwd">
+					<a href="apps/rainbow/" data-transition="slide">
+						<img src="apps/rainbow/app-icon-rainbow.png" alt=""/>
+					</a>
+				</div>
+				<div class="ui-block-rwd">
+					<a href="apps/countdown/" data-transition="slide">
+						<img src="apps/countdown/app-icon-countdown.png" alt=""/>
+					</a>
+				</div>
+				<div class="ui-block-rwd">
+					<a href="apps/settings/" data-transition="slide">
+						<img src="apps/settings/app-icon-settings.png" alt=""/>
+					</a>
+				</div>
+				
+			</div>
+			
+			<!--
+			<div class="paginator">
+				
+				<img src="assets/paginator.png" alt=""/>
+				
+			</div>
+			-->
+						
+		</section>
+		
+		<footer data-role="footer" data-position="fixed">
+			
+			<div class="strand">
+				<img src="assets/strand.png" alt=""/>
+			</div>
+			
+			<h2 class="device" id="devname">Your Holiday Name</h2>
+			
+		</footer>
+		
+	</div>
+	<!-- /apps -->
+	
+	<script>
+		// Theoretically we can now set the hostname.  Let's just see.
+		console.log("Setting screen name to " + iotasrv.hostnm);
+		$('#devname').html(iotasrv.hostnm);	
+	</script>
+	
+</body>
+</html>

@@ -1,0 +1,21 @@
+/*
+	@file: apps/afl/afl.css
+*/
+
+#afl {
+	background: #000 url(afl-background.png) repeat-y 50% 0% fixed;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  -o-background-size: contain;
+  background-size: contain;
+}
+
+#afl .ui-listview .ui-btn {
+	background: rgba(0, 0, 0, .8);
+	border-color: rgba(0, 0, 0, .9);
+}
+
+#afl .ui-btn:hover {
+	background: rgba(0, 0, 0, .6);
+	border-color: rgba(0, 0, 0, .7);
+}

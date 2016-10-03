@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Holiday &raquo; NRL</title>
+	
+</head>
+
+<body>
+	
+	<div data-role="page" id="nrl">
+
+		<script src="nrl.js"></script>
+	
+		<script>
+			
+			//var theApp = null;		// Instance variable (and global) for the app object
+	
+			// Start the app by instancing its object and 
+			function start_app() {
+				theApp = new nrl();		// Instance an app
+				theApp.appStart();		// And start the app up
+				$("ul li a").click(function () { 
+						var t = $(this).attr('href');
+						theApp.pickClub(t);
+					}
+				);
+			}
+	
+			function stop_app() {
+				theApp.appQuit();
+				$( document ).undelegate("#nrl", "pageinit", start_app);
+				$( document ).undelegate("#nrl", "pagebeforehide", stop_app );
+			}
+	
+			console.log("We seem to be in nrl");
+	
+			$( document ).delegate("#nrl", "pageinit", start_app);
+			console.log("pageinit listener attached");
+	
+			$( document ).delegate("#nrl", "pagebeforehide", stop_app);
+
+			// Must add this little bit of stuff to every app so it correctly clears itself from the cache
+			$( '#nrl' ).on("pagehide", function(event, ui) {
+				console.log('nrl.remove');
+				$('#nrl').remove();			// Dump the page from memory
+			});
+	
+		</script>
+		
+		<header data-role="header" data-position="fixed">
+			
+			<a href="#apps" class="ui-icon-nodisc ui-icon-alt" data-role="button" data-icon="grid" data-iconpos="notext" data-theme="c" data-inline="true" data-rel="back">Apps</a>
+			
+			<h1>NRL Colours</h1>
+			
+		</header>
+		
+		<section data-role="content">
+			
+			<ul data-role="listview" data-icon="check">
+				
+		    <li>
+		    	<a href="#broncos">
+			    	<img src="broncos.png" alt=""/>
+			    	<p>Brisbane</p>
+			    	<h3>Broncos</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#bulldogs">
+			    	<img src="bulldogs.png" alt=""/>
+			    	<p>Canterbury Bankstown</p>
+			    	<h3>Bulldogs</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#cowboys">
+			    	<img src="cowboys.png" alt=""/>
+			    	<p>North Queensland</p>
+			    	<h3>Cowboys</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#dragons">
+			    	<img src="dragons.png" alt=""/>
+			    	<p>St. George Illawarra</p>
+			    	<h3>Dragons</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#eels">
+			    	<img src="eels.png" alt=""/>
+			    	<p>Parramatta</p>
+			    	<h3>Eels</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#knights">
+			    	<img src="knights.png" alt=""/>
+			    	<p>Newcastle</p>
+			    	<h3>Knights</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#panthers">
+			    	<img src="panthers.png" alt=""/>
+			    	<p>Penrith</p>
+			    	<h3>Panthers</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#rabbitohs">
+			    	<img src="rabbitohs.png" alt=""/>
+			    	<p>South Sydney</p>
+			    	<h3>Rabbitohs</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#raiders">
+			    	<img src="raiders.png" alt=""/>
+			    	<p>Canberra</p>
+			    	<h3>Raiders</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#roosters">
+			    	<img src="roosters.png" alt=""/>
+			    	<p>Sydney</p>
+			    	<h3>Roosters</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#seaeagles">
+			    	<img src="eagles.png" alt=""/>
+			    	<p>Manly Warringah</p>
+			    	<h3>Sea Eagles</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#sharks">
+			    	<img src="sharks.png" alt=""/>
+			    	<p>Cronulla Sutherland</p>
+			    	<h3>Sharks</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#storm">
+			    	<img src="storm.png" alt=""/>
+			    	<p>Melbourne</p>
+			    	<h3>Storm</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#tigers">
+			    	<img src="tigers.png" alt=""/>
+			    	<p>Wests</p>
+			    	<h3>Tigers</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#titans">
+			    	<img src="titans.png" alt=""/>
+			    	<p>Gold Coast</p>
+			    	<h3>Titans</h3>
+			    </a>
+		    </li>
+		    <li>
+		    	<a href="#warriors">
+			    	<img src="warriors.png" alt=""/>
+			    	<p>New Zealand</p>
+			    	<h3>Warriors</h3>
+			    </a>
+		    </li>
+		    
+			</ul>
+			
+		</section>
+		
+	</div>
+	<!-- /nrl -->
+		
+</body>
+</html>

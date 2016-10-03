@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Holiday &raquo; Photo Grabber</title>
+	
+</head>
+
+<body>
+	
+	<div data-role="page" id="photograb">
+	
+		<script src="megapix-image.js"></script>
+		<script src="photograb.js"></script>
+	
+		<script>
+			
+			// Start the App
+			function start_app() {
+				console.log('photograb start_app');
+				theApp = new photograb(); // Instance an App
+				theApp.appStart(); // Start the App up
+			}
+			
+			// Stop the App
+			function stop_app() {
+				theApp.appQuit(); // Quit the App
+				$( document ).undelegate("#photograb", "pageinit", start_app);
+				$( document ).undelegate("#photograb", "pagebeforehide", stop_app );
+			}
+	
+			console.log("Location #photograb")
+	
+			$( document ).delegate("#photograb", "pageinit", start_app);
+			$( document ).delegate("#photograb", "pagebeforehide", stop_app);
+
+			// Must add this little bit of stuff to every app so it correctly clears itself from the cache
+			$( '#photograb' ).on("pagehide", function(event, ui) {
+				console.log('photograb.remove');
+				$('#photograb').remove();			// Dump the page from memory
+			});
+	
+		</script>
+
+		<header data-role="header" data-position="fixed">
+			
+			<a href="#apps" class="ui-icon-nodisc ui-icon-alt" data-role="button" data-icon="grid" data-iconpos="notext" data-theme="c" data-inline="true" data-rel="back">Apps</a>
+			
+			<h1>Photo Grabber</h1>
+			
+		</header>
+		
+		<section data-role="content">
+			
+			<form>
+				<input class="photograb-button" id="pic" type="file" accept="image/*" capture="camera" onchange="handlefiles(this.files)" />
+			</form>
+			
+			<div class="canvas-container">
+				<canvas id="canvas" width="290" height="290">
+					Your browser does not support the HTML5 Canvas. 
+				</canvas>
+			</div>
+			
+			<div class="paintarea-container">
+				<canvas id="paintarea" width="290" height="50">
+					Your browser does not support the HTML5 Canvas. 
+				</canvas>
+				<div id="pick">
+				</div>
+			</div>
+			
+			<div class="debug">
+				<p class="canvas">Canvas: </p>
+				<p class="paintarea">PaintArea: </p>
+			</div>
+			
+		</section>
+		
+	</div>
+	<!-- /photograb -->
+	
+</body>
+</html>

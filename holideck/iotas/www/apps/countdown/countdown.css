@@ -1,0 +1,42 @@
+/*
+	@file: apps/countdown/countdown.css
+*/
+
+#countdown {
+	background: #000;
+}
+
+#countdown #canvas {
+	display: none;
+}
+
+#countdown #counter {
+	margin: 0;
+	font-size: 10em;
+}
+
+#countdown-secval {
+	padding: .65em;
+	font-weight: bold;
+}
+
+#countdown .start, 
+#countdown .stop, 
+#countdown .reset {
+	color: #fff;
+	text-shadow: #111 0px 1px 0px;
+	float: right;
+}
+
+#countdown .start {
+	background: #00AD83;
+}
+
+#countdown .stop {
+	background: red;
+}
+
+#countdown .reset {
+	padding: 11px 13px;
+	background: #ff7f00;
+}

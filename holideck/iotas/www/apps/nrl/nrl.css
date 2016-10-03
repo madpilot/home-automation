@@ -1,0 +1,21 @@
+/*
+	@file: apps/nrl/nrl.css
+*/
+
+#nrl {
+	background: #000 url(nrl-background.png) repeat-y 50% 0% fixed;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  -o-background-size: contain;
+  background-size: contain;
+}
+
+#nrl .ui-listview .ui-btn {
+	background: rgba(0, 0, 0, .8);
+	border-color: rgba(0, 0, 0, .9);
+}
+
+#nrl .ui-btn:hover {
+	background: rgba(0, 0, 0, .6);
+	border-color: rgba(0, 0, 0, .7);
+}
