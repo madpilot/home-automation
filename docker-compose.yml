@@ -49,6 +49,9 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./holideck:/holideck
+    ports:
+      - "8888:8888"
+      - "8880:80"
 
   home-assistant:
     image: homeassistant/home-assistant
@@ -57,6 +60,7 @@ services:
       - ./ca:/ca
     links:
       - mosquitto:mqtt.local
+      - holideck:holiday.local
     depends_on:
       - certificates
       - mosquitto

@@ -10,12 +10,13 @@ License: MIT (see LICENSE for details)
 """
 
 __author__ = 'Mark Pesce'
-__version__ = '1.0b3'
+__version__ = '1.0b4'
 __license__ = 'MIT'
 
 import json, socket, os, sys
 import drawlight, setlights
-from bottle import Bottle, run, static_file, post, request, error, abort
+import subprocess
+from bottle import Bottle, run, static_file, post, request, response, error, abort
 
 # On the command line we can tell iotas to go into real mode possibly
 # invoke as python iotas.py nosim to avoid simulation mode -- which holideck won't
@@ -60,7 +61,13 @@ def redirect_404(error):
         print 'This is a WiFi login probe'
 	return 'Not a Wifi login, sorry'
     else:
+	print request.url
         return server_root()
+
+@app.error(401)
+def access_error(error):
+	print 'Access error on: %s' % request.url
+	return 'access error'
 
 @app.route('/')
 def server_root():
@@ -250,6 +257,53 @@ def gradient():
 	resp = app.licht.gradient(begin, end, int(steps))
 	return json.dumps(resp)
 
+applist = [ "christmas", "bulldogs" ]
+@app.get('/device/holiday/apps')
+def apps():
+        global applist
+
+        return json.dumps({
+            "apps": applist
+        })
+
+
+@app.get('/device/holiday/app/<app>')
+def get_app_status(app):
+        global applist
+        try:
+                if app in applist:
+                        subprocess.check_output([ "pgrep", app ])
+                        return json.dumps({ "status": "running" })
+                else:
+                        response.status = 404
+                        return "Not Found"
+        except subprocess.CalledProcessError, e:
+                return json.dumps({ "status": "not_running" })
+
+@app.put('/device/holiday/app/off')
+def stop_app():
+        global applist
+
+        for a in applist:
+		kill_app(a)
+
+        try:
+		subprocess.call([ "/home/holiday/bin/off &"], shell=True)
+	    	response.status = 200
+	    	return "Ok"
+
+        except subprocess.CalledProcessError, e:
+                response.status = 500
+                return str(e)
+
+
+def kill_app(app):
+        try:
+                subprocess.call([ 'killall', app ])
+                return
+        except subprocess.CalledProcessError:
+                return
+
 @app.put('/device/holiday/app/nrl')
 def nrl():
 	d = request.body.read()
@@ -279,6 +333,28 @@ def afl():
 	# Pass that along to wherever it needs to go
 	resp = app.licht.afl(dj)
 	return json.dumps(resp)
+
+@app.put('/device/holiday/app/<app>')
+def run_app(app):
+        global applist
+
+        for a in applist:
+            kill_app(a)
+
+        try:
+                if app in applist:
+                        subprocess.call([ "/home/holiday/bin/" + app + " &"], shell=True)
+                        response.status = 200
+                        return "Ok"
+                else:
+                        response.status = 404
+                        return "Not Found"
+
+        except subprocess.CalledProcessError, e:
+                response.status = 500
+                return str(e)
+
+
 
 def new_run():
 	""" This is the real run method, we hope"""
