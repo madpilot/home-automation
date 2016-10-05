@@ -65,3 +65,20 @@ RUN openssl genrsa \
       -CAcreateserial \
       -out /ca/hass.local.crt.pem \
       -days 365
+
+RUN openssl genrsa \
+      -out /ca/garage.local.key.pem 2048 && \
+    openssl req \
+      -new \
+      -subj "/C=AU/ST=VIC/L=Melbourne/CN=hass.local" \
+      -out /ca/garage.local.csr.pem \
+      -key /ca/garage.local.key.pem && \
+    openssl x509 \
+      -req \ 
+      -passin pass:password \
+      -in /ca/garage.local.csr.pem \
+      -CA /ca/ca.crt.pem \
+      -CAkey /ca/ca.key.pem \
+      -CAcreateserial \
+      -out /ca/garage.local.crt.pem \
+      -days 365
