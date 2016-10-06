@@ -14,10 +14,23 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./ca:/ca
+    depends_on:
+      - certificates
+
+  mosquitto-bridge:
+    build:
+      context: mosquitto
+      dockerfile: Dockerfile
+    command: mosquitto -c /etc/mosquitto/bridge.conf
+    volumes:
+      - ./ca:/ca
+    links:
+      - mosquitto:mqtt.local
     ports:
       - "8883:8883"
     depends_on:
       - certificates
+      - mosquitto
 
   mosquitto-subscriber:
     build:
@@ -43,15 +56,15 @@ services:
       - mosquitto
       - mosquitto-subscriber
 
-  holideck:
-    build:
-      context: holideck
-      dockerfile: Dockerfile
-    volumes:
-      - ./holideck:/holideck
-    ports:
-      - "8888:8888"
-      - "8880:80"
+  # holideck:
+  #   build:
+  #     context: holideck
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./holideck:/holideck
+  #   ports:
+  #     - "8888:8888"
+  #     - "8880:80"
 
   home-assistant:
     image: homeassistant/home-assistant
@@ -60,7 +73,7 @@ services:
       - ./ca:/ca
     links:
       - mosquitto:mqtt.local
-      - holideck:holiday.local
+    #  - holideck:holiday.local
     depends_on:
       - certificates
       - mosquitto

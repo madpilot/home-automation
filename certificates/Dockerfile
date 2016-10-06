@@ -33,6 +33,23 @@ RUN openssl genrsa \
       -days 365
 
 RUN openssl genrsa \
+      -out /ca/mqtt-bridge.local.key.pem 2048 && \
+    openssl req \
+      -new \
+      -subj "/C=AU/ST=VIC/L=Melbourne/CN=mqtt-bridge.local" \
+      -out /ca/mqtt-bridge.local.csr.pem \
+      -key /ca/mqtt-bridge.local.key.pem && \
+    openssl x509 \
+      -req \ 
+      -passin pass:password \
+      -in /ca/mqtt-bridge.local.csr.pem \
+      -CA /ca/ca.crt.pem \
+      -CAkey /ca/ca.key.pem \
+      -CAcreateserial \
+      -out /ca/mqtt-bridge.local.crt.pem \
+      -days 365
+
+RUN openssl genrsa \
       -out /ca/mqtt-client.local.key.pem 2048 && \
     openssl req \
       -new \
@@ -81,4 +98,21 @@ RUN openssl genrsa \
       -CAkey /ca/ca.key.pem \
       -CAcreateserial \
       -out /ca/garage.local.crt.pem \
+      -days 365
+
+RUN openssl genrsa \
+      -out /ca/myles-macbookpro.local.key.pem 2048 && \
+    openssl req \
+      -new \
+      -subj "/C=AU/ST=VIC/L=Melbourne/CN=myles-macbookpro.local" \
+      -out /ca/myles-macbookpro.local.csr.pem \
+      -key /ca/myles-macbookpro.local.key.pem && \
+    openssl x509 \
+      -req \ 
+      -passin pass:password \
+      -in /ca/myles-macbookpro.local.csr.pem \
+      -CA /ca/ca.crt.pem \
+      -CAkey /ca/ca.key.pem \
+      -CAcreateserial \
+      -out /ca/myles-macbookpro.local.crt.pem \
       -days 365
