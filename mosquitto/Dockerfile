@@ -9,7 +9,8 @@ RUN apt update -qq && apt install -y mosquitto
 
 RUN mkdir /ca
 
-COPY ./etc/mosquitto.conf /etc/mosquitto/mosquitto.conf 
+COPY ./etc/mosquitto.conf /etc/mosquitto/mosquitto.conf
+COPY ./etc/bridge.conf /etc/mosquitto/bridge.conf 
 
 EXPOSE 8883
 
