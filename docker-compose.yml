@@ -56,15 +56,15 @@ services:
       - mosquitto
       - mosquitto-subscriber
 
-  # holideck:
-  #   build:
-  #     context: holideck
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./holideck:/holideck
-  #   ports:
-  #     - "8888:8888"
-  #     - "8880:80"
+  holideck:
+    build:
+      context: holideck
+      dockerfile: Dockerfile
+    volumes:
+      - ./holideck:/holideck
+    ports:
+      - "8888:8888"
+      - "8880:80"
 
   home-assistant:
     image: homeassistant/home-assistant
